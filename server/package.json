@@ -1,0 +1,28 @@
+{
+  "name": "alchemy-testnet-tx-server",
+  "version": "0.0.1",
+  "description": "testing transactions on testnets with express server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "watch": "nodemon server.js"
+  },
+  "dependencies": {
+    "alchemy-sdk": "^3.3.1",
+    "express": "^4.17.1",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DraconMarius/testnet-tx.git"
+  },
+  "author": "Mari K. Ma",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DraconMarius/testnet-tx/issues"
+  },
+  "homepage": "https://github.com/DraconMarius/testnet-tx#readme"
+}
