@@ -89,9 +89,9 @@ function Disp() {
                                     <div className="control">
                                         <div className="select">
                                             <select value={amount} onChange={e => setAmount(e.target.value)}>
-                                                <option value="0.00005">0.1</option>
-                                                <option value="0.0001">0.5</option>
-                                                <option value="0.00015">1</option>
+                                                <option value="0.1">0.1</option>
+                                                <option value="0.5">0.5</option>
+                                                <option value="0.1">1</option>
                                             </select>
                                         </div>
                                     </div>
