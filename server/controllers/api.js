@@ -41,7 +41,7 @@ router.get('/send/:net/:to', async (req, res) => {
     const chosenConfig = configs[chosenNet];
     const chosenChainId = chainId[chosenNet];
     const toAddress = req.params.to;
-    const amount = `${req.query.amount}` || 0.0001; //curently hardcoded to 0.0001
+    const amount = `${req.query.amount}` || 0.0001; //curently hardcoded to 0.0001 if not provided
     console.log(amount)
 
     const sendTestTx = async (net, chosenConfig, toAddress, chosenChainId, amount) => {
@@ -142,6 +142,39 @@ router.get('/receipt/:net/:hash', async (req, res) => {
             receipt: convertBigNumbers(results.receipt)
         }
         res.json(convertedRes);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: err.message });
+    };
+});
+
+router.get('/balance', async (req, res) => {
+    console.log('==============/Wallet/Balance==============')
+
+    const fetchBalance = async (net, config) => {
+        const alchemy = new Alchemy(config);
+        let wallet = new Wallet(process.env.SECRET_KEY);
+        try {
+
+            const balances = await alchemy.core.getBalance(wallet.address)
+
+            return {
+                net: net,
+                balance: Utils.formatEther(balances)
+            }
+        } catch (err) {
+            console.error(`Failed to fetch Balance`, err);
+            throw new Error(err.message)
+        }
+    };
+
+    try {
+        const results = await Promise.all(
+            Object.entries(configs).map(([net, config]) =>
+                fetchBalance(net, config))
+        )
+        console.log(results);
+        res.json(results);
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: err.message });
