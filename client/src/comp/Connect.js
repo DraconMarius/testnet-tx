@@ -53,9 +53,20 @@ function Connect({ setAddress }) {
     }, [providers]);
 
     return (
-        <div>
+        <div className="container is-flex">
             {btnDisp && (
-                <button className="icon has-text-weight-bold" onClick={() => setWalletDisp(true)}><figure className="image is-16x16"> <img src={walletIcon} /></figure></button>
+                <button className="has-text-weight-bold" onClick={() => setWalletDisp(true)}>
+                    <div className="container is-flex">
+                        <span className="pr-1 is-align-self-center">
+                            Connect
+                        </span>
+
+
+                        <figure className="icon "> <img src={walletIcon} /></figure>
+
+                    </div>
+
+                </button>
             )}
 
             <div className={`modal ${walletDisp ? 'is-active' : ''}`}>
