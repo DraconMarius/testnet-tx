@@ -141,6 +141,7 @@ function Receipt({ net, hash, icon }) {
                     <div className="image is-1by1 is-48x48">
                         <img src={loadingIcon} alt="loading gif" />
                     </div>
+                    <div>Please wait until transaction receipt is populated...</div>
                 </div>
             }
 

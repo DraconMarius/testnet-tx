@@ -50,11 +50,13 @@ function Nav({ setAddress }) {
 
                 <div className="navbar-end">
 
-                    <div className=" navbar-item is-flex-direction-column ">
+                    <div className=" navbar-item is-flex ">
 
                         <div className="has-tooltip-arrow has-tooltip-left has-tooltip-warning"
                             data-tooltip="Connect Wallet">
+
                             <Connect setAddress={setAddress} />
+
                         </div>
 
                         {/* <Help type={searchParams.type} /> */}
