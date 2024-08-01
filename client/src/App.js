@@ -22,7 +22,6 @@ function App() {
     <SearchProvider>
       <Router>
 
-
         <Routes>
           <Route exact path="/" element={<Navigate replace to="/search" />} />
           <Route exact path="/search" element={<Disp />} />

@@ -6,30 +6,9 @@ import Tx from '../comp/Tx';
 import Receipt from '../comp/Receipt'
 
 
-import ethereumIcon from '../assets/etherscan-logo.png'
-import arbitrumIcon from '../assets/arbitrum-logo.png'
-import optimismIcon from '../assets/optimism-logo.png'
-import polygonIcon from '../assets/polygon-logo.png'
-
-function TxCont({ apiRes }) {
+function TxCont({ apiRes, icon }) {
     const { searchParams } = useSearch()
 
-
-    const [icon, setIcon] = useState()
-
-    useEffect(() => {
-
-        if (searchParams.network === "Polygon") {
-            setIcon(polygonIcon)
-        } else if (searchParams.network === "Arbitrum") {
-            setIcon(arbitrumIcon)
-        } else if (searchParams.network === "Optimism") {
-            setIcon(optimismIcon)
-        } else {
-            setIcon(ethereumIcon)
-        }
-
-    }, [searchParams.network]);
 
     return (
         <div className='card transparent'>
@@ -49,7 +28,7 @@ function TxCont({ apiRes }) {
                     {" on "}
 
                     <span className="highlight">
-                      { `${apiRes.response.net} TestNet`}
+                        {`${apiRes.response.net} TestNet`}
                     </span>
 
                 </div>

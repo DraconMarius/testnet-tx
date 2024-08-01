@@ -30,3 +30,34 @@ export const getReceipt = async (network, hash) => {
         return { error: err.message }
     }
 };
+
+export const getBalance = async () => {
+    const fetchURL = `/api/balance`
+    try {
+        const response = await fetch(fetchURL);
+        if (!response.ok) throw new Error(`error getting balance`);
+
+        const data = await response.json();
+
+        return data;
+    } catch (err) {
+        console.error(`Failed to fetch balance for available fund`)
+        return { error: err.mesasge }
+    }
+}
+
+export const getTx = async () => {
+    const fetchURL = `/api/transactions`
+    try {
+        const response = await fetch(fetchURL);
+
+        if (!response.ok) throw new Error(`${response.json()}`);
+
+        const data = await response.json();
+
+        return data;
+    } catch (err) {
+        console.error(`Fialed to fetch Transactions History`)
+        return { error: err.message }
+    }
+}

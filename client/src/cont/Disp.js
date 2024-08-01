@@ -3,7 +3,12 @@ import { useSearch } from './searchContext';
 import TxCont from './TxCont';
 import loadingIcon from '../assets/loading.gif';
 import Nav from './Nav';
-import { getReceipt, sendTx } from '../util/api';
+import { sendTx, getBalance, getTx } from '../util/api';
+
+import ethereumIcon from '../assets/etherscan-logo.png'
+import arbitrumIcon from '../assets/arbitrum-logo.png'
+import optimismIcon from '../assets/optimism-logo.png'
+import polygonIcon from '../assets/polygon-logo.png'
 
 function Disp() {
     const { searchParams, updateSearchParams } = useSearch();
@@ -13,12 +18,30 @@ function Disp() {
     const [address, setAddress] = useState(searchParams.walletAdd);
     const [net, setNet] = useState(searchParams.network);
     const [amount, setAmount] = useState(searchParams.amount);
+    const [balance, setBalance] = useState();
+    const [history, setHistory] = useState();
+
+    const [icon, setIcon] = useState()
+
+    useEffect(() => {
+
+        if ((searchParams.network || net) === "Polygon") {
+            setIcon(polygonIcon)
+        } else if ((searchParams.network || net) === "Arbitrum") {
+            setIcon(arbitrumIcon)
+        } else if ((searchParams.network || net) === "Optimism") {
+            setIcon(optimismIcon)
+        } else {
+            setIcon(ethereumIcon)
+        }
+
+    }, [searchParams.network, net]);
 
     const blankState = {
         network: 'Eth',
         walletAdd: '',
         type: 'default',
-        amount: 0.00005
+        amount: 0.1
     };
 
     const handleSend = async (network, address, amount) => {
@@ -60,6 +83,24 @@ function Disp() {
             fetchData();
         }
     }, [searchParams, searchParams.network, searchParams.type, searchParams.amount, searchParams.walletAdd]);
+
+    useEffect(() => {
+        const fetchHistory = async () => {
+            setLoading(true);
+            const balanceData = await getBalance();
+            setBalance(balanceData);
+            const historyData = await getTx();
+            setHistory(historyData)
+
+        }
+        fetchHistory();
+        setLoading(false);
+    }, [])
+
+    useEffect(() => {
+        console.log(balance)
+        console.log(history)
+    }, [balance, history])
 
     return (
         <div className="hero-background">
@@ -132,12 +173,10 @@ function Disp() {
                             {apiRes?.error ? (
                                 <>ERROR sending tx for {searchParams.walletAdd} on {searchParams.network} for {searchParams.amount}</>
                             ) : ((apiRes) ? (
-                                <TxCont apiRes={apiRes} />
+                                <TxCont apiRes={apiRes} icon={icon} />
                             ) : (
                                 <></>
-                            )
-                            )
-                            }
+                            ))}
                         </div>
                     </div>
 

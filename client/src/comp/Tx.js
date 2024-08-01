@@ -100,7 +100,7 @@ function Tx({ apiRes, icon }) {
                             <tr>
                                 <th>Nonce</th>
                                 <td>{apiRes.response.sentTx.nonce}</td>
-                            </tr>
+                            </tr> 
                             <tr>
                                 <th>Max Priority Fee Per Gas</th>
                                 <td>{apiRes.response.sentTx.maxPriorityFeePerGas} Gwei</td>

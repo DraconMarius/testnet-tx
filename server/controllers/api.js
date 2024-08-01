@@ -177,7 +177,7 @@ router.get('/balance', async (req, res) => {
             Object.entries(configs).map(([net, config]) =>
                 fetchBalance(net, config))
         )
-        console.log(results);
+        // console.log(results);
         res.json(results);
     } catch (err) {
         console.log(err);
@@ -223,26 +223,26 @@ router.get('/transactions', async (req, res) => {
 
         try {
             const transactions = await alchemy.core.getAssetTransfers(params);
-            return transactions.transfers;
+            return transactions.transfers || [];
         } catch (err) {
             console.error(`Failed to fetch Transaction in function`, err);
             return { error: err.message };
         }
     };
 
-    const mergeAndSortTransactions = (outTransactions, inTransactions) => {
+    const mergeAndSortTransactions = async (outTransactions, inTransactions) => {
         const outTransfers = outTransactions || [];
         const inTransfers = inTransactions || [];
 
         const combined = [
-            ...outTransfers.map(t => ({
+            ...outTransfers?.map(t => ({
                 ...t,
                 metadata: {
                     ...t.metadata,
                     age: calcAge(t.metadata.blockTimestamp)
                 }
             })),
-            ...inTransfers.map(t => ({
+            ...inTransfers?.map(t => ({
                 ...t,
                 metadata: {
                     ...t.metadata,
@@ -264,7 +264,7 @@ router.get('/transactions', async (req, res) => {
                     fetchTransaction(net, config, "outbound")
                 ]);
 
-                const sortedRes = mergeAndSortTransactions(outNetworkRes, inNetworkRes);
+                const sortedRes = await mergeAndSortTransactions(outNetworkRes, inNetworkRes);
 
                 return { [net]: sortedRes };
             })
