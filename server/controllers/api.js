@@ -3,6 +3,8 @@ const { Alchemy, Network, Wallet, Utils } = require('alchemy-sdk');
 
 const Key = process.env.ALCHEMY_API_KEY;
 
+const { calcAge } = require("../utils/age")
+
 const configs = {
     Eth: {
         apiKey: Key,
@@ -25,6 +27,8 @@ const configs = {
         network: Network.BASE_SEPOLIA
     }
 };
+
+
 // testNet ::SEPOLIA / AMOY:: chainId from https://chainlist.org/
 const chainId = {
     Eth: 11155111,
@@ -180,5 +184,103 @@ router.get('/balance', async (req, res) => {
         res.status(500).json({ error: err.message });
     };
 });
+
+router.get('/transactions', async (req, res) => {
+
+    console.log('==============/Transactions/Total==============')
+
+    const wallet = new Wallet(process.env.SECRET_KEY);
+    // const order = req.query.order || "desc"
+
+    // const createParams = (pageKey, otherOpts) => {
+    //     if (pageKey) {
+    //         return { ...otherOpts, pageKey: pageKey }
+    //     } else return otherOpts;
+    // };
+
+    const inboundParams = {
+        order: "desc",
+        toAddress: wallet.address,
+        excludeZeroValue: true,
+        category: ["external"],
+        maxCount: 10,
+        withMetadata: true
+    };
+
+    const outboundParams = {
+        order: "desc",
+        fromAddress: wallet.address,
+        excludeZeroValue: true,
+        category: ["external"],
+        maxCount: 10,
+        withMetadata: true
+    };
+
+
+    const fetchTransaction = async (net, config, option) => {
+        const params = option === "outbound" ? outboundParams : inboundParams;
+        const alchemy = new Alchemy(config);
+
+        try {
+            const transactions = await alchemy.core.getAssetTransfers(params);
+            return transactions.transfers;
+        } catch (err) {
+            console.error(`Failed to fetch Transaction in function`, err);
+            return { error: err.message };
+        }
+    };
+
+    const mergeAndSortTransactions = (outTransactions, inTransactions) => {
+        const outTransfers = outTransactions || [];
+        const inTransfers = inTransactions || [];
+
+        const combined = [
+            ...outTransfers.map(t => ({
+                ...t,
+                metadata: {
+                    ...t.metadata,
+                    age: calcAge(t.metadata.blockTimestamp)
+                }
+            })),
+            ...inTransfers.map(t => ({
+                ...t,
+                metadata: {
+                    ...t.metadata,
+                    age: calcAge(t.metadata.blockTimestamp)
+                }
+            }))
+        ];
+
+        combined.sort((a, b) => new Date(b.metadata.blockTimestamp) - new Date(a.metadata.blockTimestamp));
+
+        return combined;
+    };
+
+    try {
+        const results = await Promise.all(
+            Object.entries(configs).map(async ([net, config]) => {
+                const [inNetworkRes, outNetworkRes] = await Promise.all([
+                    fetchTransaction(net, config, "inbound"),
+                    fetchTransaction(net, config, "outbound")
+                ]);
+
+                const sortedRes = mergeAndSortTransactions(outNetworkRes, inNetworkRes);
+
+                return { [net]: sortedRes };
+            })
+        );
+
+        const combinedResults = results.reduce((net, transaction) => ({ ...net, ...transaction }), {});
+
+
+        res.json(combinedResults)
+
+    } catch (err) {
+        console.error("Failed to fetch Transactions @ Promise", err);
+        res.status(500).json({ error: err.message })
+    }
+
+
+})
 
 module.exports = router;
