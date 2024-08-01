@@ -3,12 +3,15 @@ import { useSearch } from './searchContext';
 import TxCont from './TxCont';
 import loadingIcon from '../assets/loading.gif';
 import Nav from './Nav';
+import History from '../comp/History'
 import { sendTx, getBalance, getTx } from '../util/api';
 
 import ethereumIcon from '../assets/etherscan-logo.png'
 import arbitrumIcon from '../assets/arbitrum-logo.png'
 import optimismIcon from '../assets/optimism-logo.png'
 import polygonIcon from '../assets/polygon-logo.png'
+
+import Marquee from 'react-fast-marquee'
 
 function Disp() {
     const { searchParams, updateSearchParams } = useSearch();
@@ -18,7 +21,7 @@ function Disp() {
     const [address, setAddress] = useState(searchParams.walletAdd);
     const [net, setNet] = useState(searchParams.network);
     const [amount, setAmount] = useState(searchParams.amount);
-    const [balance, setBalance] = useState();
+    const [balance, setBalance] = useState([]);
     const [history, setHistory] = useState();
 
     const [icon, setIcon] = useState()
@@ -118,6 +121,34 @@ function Disp() {
                 <section className="hero is-fullheight">
                     <div className="hero-head">
                         <Nav setAddress={setAddress} />
+                        <Marquee
+                            pauseOnHover={true}
+                            gradient={true}
+                            gradientColor='248,251,253'
+                            gradientWidth={200}
+                            autoFill={true}
+                        >
+                            <span className="tag">
+
+                                Available Testnet Funds:
+                            </span>
+                            {balance.map((item, index) => {
+                                const parsedBal = parseFloat(item.balance)
+                                console.log(parsedBal, item.balance)
+                                return (
+                                    <div className="container" key={index}>
+                                        <span className="tag  is-link">
+                                            {item.net}
+                                        </span>
+                                        <span className={`tag is-${((parsedBal > 0) && (parsedBal < 1)) ? `warning` : (parsedBal == 0) ? `danger` : `sucess`}`}>
+                                            {item.balance} ETH
+                                        </span>
+                                    </div>
+                                )
+                            }
+                            )
+                            }
+                        </Marquee>
                     </div>
                     <div className="hero-body ">
                         <div className="container has-text-centered">
@@ -197,11 +228,11 @@ function Disp() {
                             </div>
                         </nav>
                     </div>
-                </section>
+                </section >
             )
 
             }
-        </div>
+        </div >
     );
 }
 

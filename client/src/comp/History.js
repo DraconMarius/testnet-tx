@@ -2,9 +2,7 @@ import React, { useState, useRef } from 'react';
 
 import { useSearch } from '../cont/searchContext';
 
-import { FlapDisplay, Presets } from 'react-split-flap-effect';
 
-import Focus from './Focus'
 import focusIcon from '../assets/eye.png'
 import scanUrl from '../util/scan';
 
@@ -46,16 +44,7 @@ function History({ apiRes, icon }) {
             {!apiRes ? <>loading</> : (apiRes[dirRes].length === 0) ? <div className='card '><div className='card-content '>
                 <div className="content ">
 
-                    <div>
-                        <FlapDisplay
-                            className="darBordered is-justify-content-center"
-                            chars={Presets.ALPHANUM + ',.!'}
-                            length={42}
-                            timing={30}
-                            hinge={true}
-                            value="No transaction Data Available!" />
-
-                    </div>
+                    error no data
                 </div>
             </div>
             </div> :
@@ -164,9 +153,6 @@ function History({ apiRes, icon }) {
 
                         </tbody>
                     </table>
-                    {isOpen ? <div className="modal is-active" id="focus-view">
-                        <Focus net={searchParams.network} hash={focusedHash.current} setOpen={setOpen} icon={icon} />
-                    </div> : <></>}
                 </div>
             }
         </>
