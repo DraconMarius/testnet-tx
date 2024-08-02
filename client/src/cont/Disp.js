@@ -23,8 +23,19 @@ function Disp() {
     const [amount, setAmount] = useState(searchParams.amount);
     const [balance, setBalance] = useState([]);
     const [history, setHistory] = useState();
+    const [disabled, setDisabled] = useState();
+    const [receipt, setReceipt] = useState();
 
     const [icon, setIcon] = useState()
+
+    const fetchHistory = async () => {
+        setLoading(true);
+        const balanceData = await getBalance();
+        setBalance(balanceData);
+        const historyData = await getTx();
+        setHistory(historyData);
+
+    }
 
     useEffect(() => {
 
@@ -88,22 +99,24 @@ function Disp() {
     }, [searchParams, searchParams.network, searchParams.type, searchParams.amount, searchParams.walletAdd]);
 
     useEffect(() => {
-        const fetchHistory = async () => {
-            setLoading(true);
-            const balanceData = await getBalance();
-            setBalance(balanceData);
-            const historyData = await getTx();
-            setHistory(historyData)
-
-        }
         fetchHistory();
         setLoading(false);
     }, [])
 
+        useEffect(() => {
+            fetchHistory();
+            setLoading(false);
+        }, [receipt])
+
     useEffect(() => {
-        console.log(balance)
-        console.log(history)
-    }, [balance, history])
+        const currentBalance = balance.find(item => item.net === net);
+        if (currentBalance) {
+            const parsedBalance = parseFloat(currentBalance.balance);
+            setDisabled(parsedBalance < parseFloat(amount));
+        } else {
+            setDisabled(true);
+        }
+    }, [balance, net, amount]);
 
     return (
         <div className="hero-background">
@@ -111,8 +124,10 @@ function Disp() {
                 <div className="modal is-active">
                     <div className="modal-background">
                         <div className="modal-content is-flex is-justify-content-center is-align-items-center">
-                            <div className="image is-1by1 is-48x48 is-align-self-center">
-                                <img src={loadingIcon} alt="loading gif" />
+                            <div className="container is-flex is-justify-content-center">
+                                <div className="image is-1by1 is-48x48 is-align-self-center">
+                                    <img src={loadingIcon} alt="loading gif" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -196,15 +211,16 @@ function Disp() {
                                     </div>
                                 </div>
                                 <div className="control is-justify-content-center">
-                                    <button className="button is-primary" onClick={() => handleSend(net, address, amount)}>
-                                        Initiate Transfer
+                                    <button className={`button is-${disabled ? "danger" : "primary"}`} onClick={() => handleSend(net, address, amount)} disabled={disabled || loading}>
+                                        {disabled ? <p>Insufficient Fund!</p> : loading ? <p>Loading Tx history...</p> : <>Initiate Transfer</>}
                                     </button>
+                                    {disabled ? <p className="has-text-warning">Create an issue <a href="https://github.com/DraconMarius/testnet-tx" className="has-text-danger">HERE</a></p> : <></>}
                                 </div>
                             </div>
                             {apiRes?.error ? (
                                 <>ERROR sending tx for {searchParams.walletAdd} on {searchParams.network} for {searchParams.amount}</>
                             ) : ((apiRes) ? (
-                                <TxCont apiRes={apiRes} icon={icon} />
+                                <TxCont apiRes={apiRes} icon={icon} receipt={receipt} setReceipt={setReceipt} />
                             ) : (
                                 <></>
                             ))}
@@ -219,7 +235,7 @@ function Disp() {
 
                     <div className="hero-foot">
                         <nav className="tabs is-boxed is-fullwidth">
-                            <div className="container pt-0">
+                            <div className="container pt-0 has-text-warning">
                                 <ul>
                                     <li>
                                         <a href="https://docs.alchemy.com" target="_blank" rel="noreferrer">Alchemy Docs</a>

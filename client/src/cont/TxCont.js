@@ -6,7 +6,7 @@ import Tx from '../comp/Tx';
 import Receipt from '../comp/Receipt'
 
 
-function TxCont({ apiRes, icon }) {
+function TxCont({ apiRes, icon, receipt, setReceipt }) {
     const { searchParams } = useSearch()
 
 
@@ -49,7 +49,7 @@ function TxCont({ apiRes, icon }) {
 
                     <div className="divider is-vertical highlight">{`Receipt->`}</div>
 
-                    <Receipt net={apiRes.response.net} hash={apiRes.response.sentTx.hash} icon={icon} />
+                    <Receipt net={apiRes.response.net} hash={apiRes.response.sentTx.hash} icon={icon} receipt={receipt} setReceipt={setReceipt} />
                 </div>
 
             </div>

@@ -3,14 +3,14 @@ import { useSearch } from '../cont/searchContext';
 import scanUrl from '../util/scan';
 
 function History({ history, icon, setNet, net }) {
-    const [selectedIndex, setSelectedIndex] = useState(0);
+    const networks = Object.keys(history);
+    const [selectedIndex, setSelectedIndex] = useState(networks.indexOf(net));
 
     const copyString = (string) => {
         navigator.clipboard.writeText(string);
         console.log(`copied ${string} to clipboard`);
     };
 
-    const networks = Object.keys(history);
 
     useEffect(() => {
         setSelectedIndex(networks.indexOf(net))

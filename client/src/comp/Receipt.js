@@ -6,9 +6,8 @@ import { getReceipt } from '../util/api'
 import loadingIcon from '../assets/loading.gif'
 import scanUrl from '../util/scan';
 
-function Receipt({ net, hash, icon }) {
+function Receipt({ net, hash, icon, receipt, setReceipt }) {
     const [isLoading, setLoading] = useState();
-    const [receipt, setReceipt] = useState(null);
 
     const formatAdd = (add) => {
         try {
