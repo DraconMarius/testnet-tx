@@ -111,7 +111,7 @@ function Disp() {
                 <div className="modal is-active">
                     <div className="modal-background">
                         <div className="modal-content is-flex is-justify-content-center is-align-items-center">
-                            <div className="image is-1by1 is-48x48">
+                            <div className="image is-1by1 is-48x48 is-align-self-center">
                                 <img src={loadingIcon} alt="loading gif" />
                             </div>
                         </div>
@@ -140,7 +140,7 @@ function Disp() {
                                         <span className="tag  is-link">
                                             {item.net}
                                         </span>
-                                        <span className={`tag is-${((parsedBal > 0) && (parsedBal < 1)) ? `warning` : (parsedBal == 0) ? `danger` : `sucess`}`}>
+                                        <span className={`tag is-${((parsedBal > 0.1) && (parsedBal < 1)) ? `warning` : (parsedBal < 0.1) ? `danger` : `success`}`}>
                                             {item.balance} ETH
                                         </span>
                                     </div>
@@ -208,6 +208,12 @@ function Disp() {
                             ) : (
                                 <></>
                             ))}
+                            {history ? <History history={history} icon={icon} setNet={setNet} net={net} /> :
+                                <div className="container is-flex is-justify-content-center">
+                                    <div className="image is-1by1 is-48x48 is-align-self-center">
+                                        <img src={loadingIcon} alt="loading gif" />
+                                    </div></div>}
+
                         </div>
                     </div>
 

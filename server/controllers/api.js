@@ -186,17 +186,9 @@ router.get('/balance', async (req, res) => {
 });
 
 router.get('/transactions', async (req, res) => {
-
-    console.log('==============/Transactions/Total==============')
+    console.log('==============/Transactions/Total==============');
 
     const wallet = new Wallet(process.env.SECRET_KEY);
-    // const order = req.query.order || "desc"
-
-    // const createParams = (pageKey, otherOpts) => {
-    //     if (pageKey) {
-    //         return { ...otherOpts, pageKey: pageKey }
-    //     } else return otherOpts;
-    // };
 
     const inboundParams = {
         order: "desc",
@@ -216,8 +208,7 @@ router.get('/transactions', async (req, res) => {
         withMetadata: true
     };
 
-
-    const fetchTransaction = async (net, config, option) => {
+    const fetchTransaction = async (net, config, option, retries = 3) => {
         const params = option === "outbound" ? outboundParams : inboundParams;
         const alchemy = new Alchemy(config);
 
@@ -225,24 +216,27 @@ router.get('/transactions', async (req, res) => {
             const transactions = await alchemy.core.getAssetTransfers(params);
             return transactions.transfers || [];
         } catch (err) {
-            console.error(`Failed to fetch Transaction in function`, err);
-            return { error: err.message };
+            if (retries > 0) {
+                console.warn(`Retrying fetchTransaction for ${net} - ${option}, attempts left: ${retries - 1}`);
+                await new Promise(resolve => setTimeout(resolve, 2000 * (4 - retries))); // Exponential backoff
+                return fetchTransaction(net, config, option, retries - 1);
+            } else {
+                console.error(`Failed to fetch transactions for ${net} - ${option} after retries:`, err);
+                return [];
+            }
         }
     };
 
-    const mergeAndSortTransactions = async (outTransactions, inTransactions) => {
-        const outTransfers = outTransactions || [];
-        const inTransfers = inTransactions || [];
-
+    const mergeAndSortTransactions = (outTransactions, inTransactions) => {
         const combined = [
-            ...outTransfers?.map(t => ({
+            ...outTransactions.map(t => ({
                 ...t,
                 metadata: {
                     ...t.metadata,
                     age: calcAge(t.metadata.blockTimestamp)
                 }
             })),
-            ...inTransfers?.map(t => ({
+            ...inTransactions.map(t => ({
                 ...t,
                 metadata: {
                     ...t.metadata,
@@ -259,28 +253,35 @@ router.get('/transactions', async (req, res) => {
     try {
         const results = await Promise.all(
             Object.entries(configs).map(async ([net, config]) => {
-                const [inNetworkRes, outNetworkRes] = await Promise.all([
-                    fetchTransaction(net, config, "inbound"),
-                    fetchTransaction(net, config, "outbound")
-                ]);
+                try {
+                    const [inNetworkRes, outNetworkRes] = await Promise.all([
+                        fetchTransaction(net, config, "inbound"),
+                        fetchTransaction(net, config, "outbound")
+                    ]);
 
-                const sortedRes = await mergeAndSortTransactions(outNetworkRes, inNetworkRes);
+                    const sortedRes = mergeAndSortTransactions(outNetworkRes, inNetworkRes);
 
-                return { [net]: sortedRes };
+                    return { [net]: sortedRes };
+                } catch (err) {
+                    console.error(`Failed to fetch transactions for network ${net}:`, err);
+                    return { [net]: [] };
+                }
             })
         );
 
-        const combinedResults = results.reduce((net, transaction) => ({ ...net, ...transaction }), {});
+        const combinedResults = results.reduce((acc, networkTransactions) => ({
+            ...acc,
+            ...networkTransactions
+        }), {});
 
-
-        res.json(combinedResults)
+        res.json(combinedResults);
 
     } catch (err) {
-        console.error("Failed to fetch Transactions @ Promise", err);
-        res.status(500).json({ error: err.message })
+        console.error("Failed to fetch transactions @ Promise", err);
+        res.status(500).json({ error: err.message });
     }
+});
 
 
-})
 
 module.exports = router;
