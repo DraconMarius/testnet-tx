@@ -8,7 +8,7 @@ export const SearchProvider = ({ children }) => {
         network: 'Eth',
         walletAdd: '',
         type: 'default',
-        amount: 0.00005
+        amount: 0.1
     });
 
     const updateSearchParams = (newParams) => {

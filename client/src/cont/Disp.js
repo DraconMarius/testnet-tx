@@ -4,6 +4,7 @@ import TxCont from './TxCont';
 import loadingIcon from '../assets/loading.gif';
 import Nav from './Nav';
 import History from '../comp/History'
+import Connect from '../comp/Connect';
 import { sendTx, getBalance, getTx } from '../util/api';
 
 import ethereumIcon from '../assets/etherscan-logo.png'
@@ -103,10 +104,10 @@ function Disp() {
         setLoading(false);
     }, [])
 
-        useEffect(() => {
-            fetchHistory();
-            setLoading(false);
-        }, [receipt])
+    useEffect(() => {
+        fetchHistory();
+        setLoading(false);
+    }, [receipt])
 
     useEffect(() => {
         const currentBalance = balance.find(item => item.net === net);
@@ -208,6 +209,12 @@ function Disp() {
                                             value={searchParams.walletAdd || address}
                                             placeholder={searchParams.walletAdd || address || `Address`}
                                         />
+                                    </div>
+                                    <div className="has-tooltip-arrow has-tooltip-warning"
+                                        data-tooltip="Connect Wallet">
+
+                                        <Connect setAddress={setAddress} />
+
                                     </div>
                                 </div>
                                 <div className="control is-justify-content-center">

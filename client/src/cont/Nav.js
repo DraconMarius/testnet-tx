@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import logo from '../assets/alchemylogo.png';
-import Connect from '../comp/Connect';
+
 
 
 import { useSearch } from './searchContext';
@@ -52,12 +52,7 @@ function Nav({ setAddress }) {
 
                     <div className=" navbar-item is-flex ">
 
-                        <div className="has-tooltip-arrow has-tooltip-left has-tooltip-warning"
-                            data-tooltip="Connect Wallet">
-
-                            <Connect setAddress={setAddress} />
-
-                        </div>
+                       
 
                         {/* <Help type={searchParams.type} /> */}
                     </div>

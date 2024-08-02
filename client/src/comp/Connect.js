@@ -111,7 +111,7 @@ function Connect({ setAddress }) {
                                 )
                                 ) : (providers && selectedProv && addresses) ?
                                     addresses.map((address, index) => (
-                                        <div className="box is-justify-content-center is-flex" >
+                                        <div className="box is-justify-content-center is-flex" key={index} >
                                             <div className="button is-info" onClick={() => handleConnect(address)} >
                                                 {address}
                                             </div>

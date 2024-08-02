@@ -4,7 +4,7 @@
   
   ###### Check out the badges hosted by [shields.io](https://shields.io/)
 
- [Deployed Heroku Link]()
+ [Deployed Heroku Link](https://alchemy-testnet-tx-0841d3990122.herokuapp.com/)
   
   ## Description
   *A web app for sending testnet tokens for various supported network*
@@ -23,7 +23,7 @@
 
   ~~***This project is hosted on a heroku eco-dyno, when it is not being actively used it requires a bit extra start up time. This can be mitigated by upgrading to the next tier on heroku.***~~
   
-  [Deployed Heroku Link]()
+  [Deployed Heroku Link](https://alchemy-testnet-tx-0841d3990122.herokuapp.com/search)
   
   If you would like to host a version of it yourself, please follow these instructions:
 
@@ -45,14 +45,23 @@
   > *You are also able to connect your browser extension wallets that utilizes the [EIPS-6963](https://eips.ethereum.org/EIPS/eip-6963) which helps avoid conflict and improves user experience.*
 
 
-  > **Owned Tokens and metaData**
+  > **Wallet Balance and History**
   > - *network*
-  > - *wallet address (to)*
-  > - *amount of token to be sent*
+  > - *address*
   
   > ![gif5]()
 
-  > **Transaction Receipts**
+  > **Sending Transaction**
+  > - *network*
+  > - *receiving address*
+  > - *gasLimit*
+  > - *maxPriorityFeePerGas*
+  > - *maxFeePerGas*
+  > - *nonce* from *getTransactionCount*
+  > - *value*
+
+
+  > **Receipts**
   > - *network*
   > - *Transaction Hash*
   
