@@ -40,17 +40,17 @@ function Disp() {
 
     useEffect(() => {
 
-        if ((searchParams.network || net) === "Polygon") {
+        if ((net) === "Polygon") {
             setIcon(polygonIcon)
-        } else if ((searchParams.network || net) === "Arbitrum") {
+        } else if ((net) === "Arbitrum") {
             setIcon(arbitrumIcon)
-        } else if ((searchParams.network || net) === "Optimism") {
+        } else if ((net) === "Optimism") {
             setIcon(optimismIcon)
         } else {
             setIcon(ethereumIcon)
         }
 
-    }, [searchParams.network, net]);
+    }, [net, setNet]);
 
     const blankState = {
         network: 'Eth',
@@ -150,7 +150,7 @@ function Disp() {
                             </span>
                             {balance.map((item, index) => {
                                 const parsedBal = parseFloat(item.balance)
-                                console.log(parsedBal, item.balance)
+                                // console.log(parsedBal, item.balance)
                                 return (
                                     <div className="container" key={index}>
                                         <span className="tag  is-link">
