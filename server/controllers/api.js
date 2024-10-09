@@ -58,17 +58,22 @@ router.get('/send/:net/:to', async (req, res) => {
             const nonce = await alchemy.core.getTransactionCount(
                 wallet.address, "pending"
             )
+            const gasPrices = await alchemy.core.getFeeData();
+            const maxPriorityFeePerGas = gasPrices.maxPriorityFeePerGas;
+            const polygonPriority = Number.parseInt(Utils.formatUnits(maxPriorityFeePerGas, 'wei'), 10) + 23500000000
+            const maxFeePerGas = gasPrices.maxFeePerGas;
+            const polygonMax = Number.parseInt(Utils.formatUnits(maxFeePerGas, 'wei'), 10) + 23500000000
             console.log(`${nonce} <- nonce`)
-            let tx = {
+            const tx = {
                 to: toAddress,
-                value: Utils.parseEther(amount),
-                gasLimit: "21000",
-                maxPriorityFeePerGas: Utils.parseUnits("5", "gwei"),
-                maxFeePerGas: Utils.parseUnits("20", "gwei"),
+                value: amount,
+                gasLimit: "300000",
+                maxPriorityFeePerGas: net === "Polygon" ? polygonPriority : maxPriorityFeePerGas,
+                maxFeePerGas: net === "Polygon" ? polygonMax : maxFeePerGas,
                 nonce,
                 type: 2,
-                chainId: chosenChainId
-            }
+                chainId: chosenChainId,
+            };
             let rawTx = await wallet.signTransaction(tx);
             let sentTx = await alchemy.core.sendTransaction(rawTx)
 
