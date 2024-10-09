@@ -66,7 +66,7 @@ router.get('/send/:net/:to', async (req, res) => {
             console.log(`${nonce} <- nonce`)
             const tx = {
                 to: toAddress,
-                value: amount,
+                value: Utils.formatEther(amount),
                 gasLimit: "300000",
                 maxPriorityFeePerGas: net === "Polygon" ? polygonPriority : maxPriorityFeePerGas,
                 maxFeePerGas: net === "Polygon" ? polygonMax : maxFeePerGas,
